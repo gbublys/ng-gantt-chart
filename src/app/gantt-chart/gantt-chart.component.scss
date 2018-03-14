@@ -1,0 +1,95 @@
+$border: 1px rgba(127, 127, 127, 0.28) solid;
+
+.flex-container {
+  list-style: none;
+  float: left;
+
+  -ms-box-orient: horizontal;
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -moz-flex;
+  display: -webkit-flex;
+  display: flex;
+  //
+  //-webkit-flex-flow: row wrap;
+  //flex-flow: row wrap;
+}
+
+.h-100 {
+  height: 100%;
+}
+
+.center {
+  -webkit-align-items: center;
+  align-items: center;
+}
+
+.task-list {
+  border: $border;
+}
+
+.task-entry {
+  padding-left: 10px;
+  padding-right: 10px;
+
+  border-bottom: $border;
+
+  &:first-child {
+    margin-top: -1px;
+  }
+}
+
+
+
+.axis {
+  //font: 10px sans-serif;
+  font: 12px Roboto;
+
+  .tick text{
+    fill: rgb(117, 117, 117);
+  }
+}
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: rgb(158, 158, 158);
+  shape-rendering: crispEdges;
+}
+
+.axis-title {
+  fill: none;
+  stroke: black;
+  stroke-width: 0.5px;
+}
+
+.viewport {
+  overflow: auto;
+}
+
+.axis--x path {
+  /*display: none;*/
+}
+
+.grid {
+  .domain {
+    stroke: none;
+  }
+
+  line {
+    stroke: lightgrey;
+    stroke-opacity: 0.7;
+    shape-rendering: crispEdges;
+  }
+}
+
+.task-rect {
+  fill: rgb(68, 135, 239);
+  border-radius: 10px;
+  stroke-width: 1.5px;
+
+  &:hover {
+    fill: rgb(56, 104, 194);
+  }
+}

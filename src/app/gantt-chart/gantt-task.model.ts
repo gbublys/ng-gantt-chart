@@ -1,4 +1,4 @@
-export class TaskModel {
+export class GanttTaskModel {
   name: string;
 
   createdOn: Date;

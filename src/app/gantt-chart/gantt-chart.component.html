@@ -1,0 +1,12 @@
+<div style="display: flex;">
+  <div [style.padding-top]="margin.top + 'px'" class="task-list">
+    <div *ngFor="let task of tasks" [style.height]="cellHeight - 1 + 'px'" class="task-entry">
+      <div  class="flex-container center h-100 ">
+        {{ task.name }}
+      </div>
+    </div>
+  </div>
+  <div class="viewport"  style="flex: 1">
+    <svg [attr.width]="getWidth() + margin.right" [attr.height]="getHeight() + margin.bottom "></svg>
+  </div>
+</div>
