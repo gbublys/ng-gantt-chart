@@ -8,8 +8,12 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "target": "es5",
+    "module": "es2015",
     "typeRoots": [
       "node_modules/@types"
+    ],
+    "files": [
+      "./app/gantt-chart/gantt-chart.ts"
     ],
     "lib": [
       "es2017",

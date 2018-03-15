@@ -1,5 +1,8 @@
 $border: 1px rgba(127, 127, 127, 0.28) solid;
 
+$task-progress-bg: rgb(68, 135, 239);
+$task-overall-bg: lighten($task-progress-bg, 20);
+
 .flex-container {
   list-style: none;
   float: left;
@@ -40,8 +43,6 @@ $border: 1px rgba(127, 127, 127, 0.28) solid;
   }
 }
 
-
-
 .axis {
   //font: 10px sans-serif;
   font: 12px Roboto;
@@ -72,6 +73,13 @@ $border: 1px rgba(127, 127, 127, 0.28) solid;
   /*display: none;*/
 }
 
+.dependency {
+  path {
+    fill: none;
+    stroke: $task-overall-bg;
+  }
+}
+
 .grid {
   .domain {
     stroke: none;
@@ -84,12 +92,30 @@ $border: 1px rgba(127, 127, 127, 0.28) solid;
   }
 }
 
-.task-rect {
-  fill: rgb(68, 135, 239);
-  border-radius: 10px;
-  stroke-width: 1.5px;
+.task-list {
+  .task {
+    text {
+      fill: white;
+      text-anchor: middle;
+      alignment-baseline: middle;
+    }
 
-  &:hover {
-    fill: rgb(56, 104, 194);
+    .progress {
+      fill: $task-progress-bg;
+    }
+
+    .task-bg {
+      fill: $task-overall-bg;
+    }
+
+    &:hover {
+      .progress {
+        fill: darken($task-progress-bg, 6);
+      }
+
+      .task-bg {
+        fill: darken($task-overall-bg, 6);
+      }
+    }
   }
 }
