@@ -15,4 +15,8 @@ describe('GanttChartComponent', () => {
     expect(true).toBeTruthy();
   });
 
+  it('Should emit task click event', () => {
+    expect(true).toBeTruthy();
+  });
+
 });
