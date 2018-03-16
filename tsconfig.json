@@ -12,9 +12,6 @@
     "typeRoots": [
       "node_modules/@types"
     ],
-    "files": [
-      "./app/gantt-chart/gantt-chart.ts"
-    ],
     "lib": [
       "es2017",
       "dom"

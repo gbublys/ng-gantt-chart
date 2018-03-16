@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {GanttTaskModel} from './gantt-chart/gantt-task.model';
+import {GanttTaskModel} from '../lib/gantt-chart/gantt-task.model';
 
 const Tasks: GanttTaskModel[] = [
   {

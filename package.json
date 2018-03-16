@@ -1,6 +1,6 @@
 {
-  "name": "ng-gant",
-  "version": "0.0.0",
+  "name": "ng-gantt-chart",
+  "version": "0.0.3",
   "license": "MIT",
   "scripts": {
     "ng": "ng",
@@ -9,9 +9,9 @@
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
-    "packagr": "ng-packagr -p ng-package.json"
+    "packagr": "ng-packagr -p ./src/lib/gantt-chart/package.json"
   },
-  "private": true,
+  "private": false,
   "dependencies": {
     "@angular/animations": "^5.2.0",
     "@angular/common": "^5.2.0",

@@ -8,7 +8,7 @@ import * as d3Path from 'd3-path';
 import * as d3timeFormat from 'd3-time-format';
 
 @Component({
-  selector: 'app-gantt-chart',
+  selector: 'ng-gantt-chart',
   templateUrl: './gantt-chart.component.html',
   styleUrls: ['./gantt-chart.component.scss'],
   encapsulation: ViewEncapsulation.None,

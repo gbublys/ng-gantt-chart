@@ -1,0 +1,16 @@
+{
+  "name": "ng-gantt-chart",
+  "version": "0.0.4",
+  "private": false,
+  "peerDependencies": {
+    "@angular/common": "^5.2.0",
+    "@angular/core": "^5.2.0",
+    "d3": "^4.13.0"
+  },
+  "ngPackage": {
+    "lib": {
+      "entryFile": "public_api.ts"
+    },
+    "dest": "../../../dist"
+  }
+}
