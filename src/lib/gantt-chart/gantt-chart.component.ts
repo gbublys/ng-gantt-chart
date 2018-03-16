@@ -1,11 +1,12 @@
 import {Component, Input, OnInit, ViewEncapsulation} from '@angular/core';
 import {GanttTaskModel} from './gantt-task.model';
-import * as d3 from 'd3-selection';
+
 import * as d3Scale from 'd3-scale';
 import * as d3Array from 'd3-array';
 import * as d3Axis from 'd3-axis';
 import * as d3Path from 'd3-path';
 import * as d3timeFormat from 'd3-time-format';
+import * as d3Selection from 'd3-selection';
 
 @Component({
   selector: 'ng-gantt-chart',
@@ -48,7 +49,7 @@ export class GanttChartComponent implements OnInit {
   }
 
   private initSvg() {
-    this.svg = d3.select('svg')
+    this.svg = d3Selection.select('svg')
       .append('g')
       .attr('transform', 'translate(' + this.margin.left + ',' + this.margin.top + ')');
   }
