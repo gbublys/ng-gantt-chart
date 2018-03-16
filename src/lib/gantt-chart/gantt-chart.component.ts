@@ -1,4 +1,4 @@
-import {Component, EventEmitter, InjectionToken, Input, OnInit, Output, ViewEncapsulation} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output, ViewEncapsulation} from '@angular/core';
 import {GanttTaskModel} from './gantt-task.model';
 
 import * as d3Scale from 'd3-scale';
@@ -6,15 +6,9 @@ import * as d3Array from 'd3-array';
 import * as d3Axis from 'd3-axis';
 import * as d3Path from 'd3-path';
 import * as d3timeFormat from 'd3-time-format';
-import * as d3Selection from 'd3-selection';
 import {D3TaskUtilityService} from './utility/d3-task-utility.service';
+import {D3SvgContainerUtilityService} from './utility/d3-svg-container-utility.service';
 
-export const CHART_CONTAINER_PROVIDER = new InjectionToken<ChartContainer>('gbublys.ng.gantt.chart');
-
-export interface ChartContainer {
-    applyXScaling(i: any): number;
-    applyYScaling(i: any): number;
-}
 
 @Component({
     selector: 'ng-gantt-chart',
@@ -22,21 +16,19 @@ export interface ChartContainer {
     styleUrls: ['./gantt-chart.component.scss'],
     encapsulation: ViewEncapsulation.None,
     providers: [
-        { provide: CHART_CONTAINER_PROVIDER, useExisting: GanttChartComponent },
+        D3SvgContainerUtilityService,
         D3TaskUtilityService,
     ]
 })
-export class GanttChartComponent implements OnInit, ChartContainer {
-
-    @Input() public tasks: GanttTaskModel[];
+export class GanttChartComponent implements OnInit {
 
     public margin = {top: 1, right: 1, bottom: 30, left: 0};
     private width: number;
     private height: number;
     protected xScale: any;
     protected yScale: any;
-    private svg: any;
 
+    @Input() public tasks: GanttTaskModel[];
     @Input() public cellHeight = 50;
     @Input() public cellWidth = 50;
     @Input() public dateFormat: string  = null;
@@ -45,39 +37,31 @@ export class GanttChartComponent implements OnInit, ChartContainer {
 
     @Output() public taskClick = new EventEmitter<GanttTaskModel>();
 
-    constructor(private d3TaskUtility: D3TaskUtilityService) {
+    constructor(private d3ContainerUtility: D3SvgContainerUtilityService,
+                private d3TaskUtility: D3TaskUtilityService) {
         this.width = window.innerWidth - this.margin.left - this.margin.right;
         this.height = window.innerHeight - this.margin.top - this.margin.bottom;
     }
 
     ngOnInit(): void {
-        this.initSvg();
+        this.initContainer();
         this.initAxis();
 
         this.drawGrid();
         this.drawTasks();
         this.drawAxis();
 
-        this.drawRequirement(this.tasks[0], this.tasks[2]);
-        this.drawRequirement(this.tasks[2], this.tasks[4]);
+        // this.drawRequirement(this.tasks[0], this.tasks[2]);
+        // this.drawRequirement(this.tasks[2], this.tasks[4]);
     }
 
     public test() {
         console.log(this.d3TaskUtility.tasks);
     }
 
-    public applyXScaling(i: number): number {
-        return this.xScale(i);
-    }
-
-    public applyYScaling(i: number): number {
-        return this.yScale(i);
-    }
-
-    private initSvg() {
-        this.svg = d3Selection.select('svg')
-            .append('g')
-            .attr('transform', 'translate(' + this.margin.left + ',' + this.margin.top + ')');
+    private initContainer() {
+        this.d3ContainerUtility.init('svg');
+        this.d3ContainerUtility.applyMargin(this.margin);
     }
 
     private initAxis() {
@@ -90,10 +74,16 @@ export class GanttChartComponent implements OnInit, ChartContainer {
         ]);
 
         this.yScale.domain(this.tasks.map((t) => t.name ));
+
+        this.d3ContainerUtility.xScale = this.xScale;
+        this.d3ContainerUtility.yScale = this.yScale;
     }
 
     private drawAxis() {
-        this.drawXAxis();
+        this.d3ContainerUtility.svg.append('g')
+            .attr('class', 'axis axis--x')
+            .attr('transform', `translate(0, ${ this.getHeight() })`)
+            .call(d3Axis.axisBottom(this.xScale).ticks(this.getDateDiffInDays()).tickFormat(this.getDateFormat()));
     }
 
     private drawRequirement(requiredTask: GanttTaskModel, requiredTaskBy: GanttTaskModel) {
@@ -122,18 +112,11 @@ export class GanttChartComponent implements OnInit, ChartContainer {
         path.lineTo(this.xScale(requiredTaskBy.createdOn) - this.cellHeight / 10 , this.yScale(requiredTaskBy.name) + (this.cellHeight - this.cellHeight / 2.5));
 
         // Append line to graph
-        this.svg
+        this.d3ContainerUtility.svg
             .append('g')
             .attr('class', 'dependency')
             .append('path')
             .attr('d', path);
-    }
-
-    private drawXAxis() {
-        this.svg.append('g')
-            .attr('class', 'axis axis--x')
-            .attr('transform', `translate(0, ${ this.getHeight() })`)
-            .call(d3Axis.axisBottom(this.xScale).ticks(this.getDateDiffInDays()).tickFormat(this.getDateFormat()));
     }
 
     /** Returns a user specified time format. If none was specified - a null will be returned. */
@@ -143,7 +126,7 @@ export class GanttChartComponent implements OnInit, ChartContainer {
 
     private drawGrid() {
         if (this.hGrid) {
-            this.svg
+            this.d3ContainerUtility.svg
                 .append('g')
                 .call( d3Axis.axisLeft(this.yScale).ticks(this.tasks.length).tickSize(-this.getWidth()).tickFormat('' as any) )
                 .attr('transform', `translate(0, ${ -this.cellHeight / 2 })`)
@@ -151,7 +134,7 @@ export class GanttChartComponent implements OnInit, ChartContainer {
         }
 
         if (this.vGrid) {
-            this.svg
+            this.d3ContainerUtility.svg
                 .append('g')
                 .call(d3Axis.axisBottom(this.xScale).ticks(this.getDateDiffInDays()).tickSize(this.getHeight()).tickFormat('' as any))
                 .attr('class', 'grid');
@@ -159,24 +142,15 @@ export class GanttChartComponent implements OnInit, ChartContainer {
     }
 
     private drawTasks() {
-        this.d3TaskUtility.initTasks(this.svg, this.tasks);
+        this.d3TaskUtility.initTasks(this.d3ContainerUtility.svg, this.tasks);
         this.d3TaskUtility.invalidate();
 
-        const rectContainer = this.d3TaskUtility.tasks;
+        this.d3TaskUtility.tasks.on('click', (task) => this.onTaskClick(task));
+    }
 
-        // Draw rectangles that describe actual progress.
-        rectContainer.selectAll('.progress')
-            .attr('x', (d: GanttTaskModel) => this.xScale(d.createdOn))
-            .attr('y', (d: GanttTaskModel) => this.yScale(d.name) + 2)
-            .attr('ry', 3)
-            .attr('height', (d) => this.yScale.bandwidth() - 5)
-            .attr('width', (d: GanttTaskModel) => (this.xScale(d.dueTo) - this.xScale(d.createdOn)) * d.progress / 100);
-
-        rectContainer
-            .selectAll('text')
-            .text((d: GanttTaskModel) => `${ d.progress }%`)
-            .attr('x', (task: GanttTaskModel) => (this.xScale(task.dueTo) - this.xScale(task.createdOn)) / 2 + this.xScale(task.createdOn))
-            .attr('y', (task: GanttTaskModel) => this.yScale(task.name) + this.cellHeight / 2);
+    /** Emit that task was clicked */
+    private onTaskClick(task: GanttTaskModel) {
+        this.taskClick.emit(task);
     }
 
     private getHeight(): number {

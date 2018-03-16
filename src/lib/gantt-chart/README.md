@@ -27,3 +27,22 @@ After import you can use your chart in the template as follows:
 ```
   <ng-gantt-chart [tasks]="tasks"></ng-gantt-chart>
 ```
+
+## Component documentation
+
+### Inputs
+
+`tasks`: GanttTaskModel[] **Required** An array of GanttTaskModel objects.
+
+`cellHeight`: number;
+
+`cellWidth`: number;
+
+`vGrid`: boolean;
+
+`hGrid`: boolean;
+
+
+### Output events
+
+`taskClick` event is being fired when user click on task list item or task progress bar

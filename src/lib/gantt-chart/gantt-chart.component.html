@@ -1,6 +1,6 @@
 <div style="display: flex;">
     <div [style.padding-top]="margin.top + 'px'" class="task-list">
-        <div *ngFor="let task of tasks" [style.height]="cellHeight - 1 + 'px'" class="task-entry">
+        <div *ngFor="let task of tasks" [style.height]="cellHeight - 1 + 'px'" class="task-entry" (click)="onTaskClick(task)">
             <div  class="flex-container center h-100 ">
                 {{ task.name }}
             </div>
@@ -10,5 +10,3 @@
         <svg [attr.width]="getWidth() + margin.right" [attr.height]="getHeight() + margin.bottom "></svg>
     </div>
 </div>
-
-<button (click)="test()">TEST</button>
