@@ -56,7 +56,7 @@ export class GanttChartComponent implements OnInit {
     }
 
     @Input() public set tasks(tasks: GanttTaskModel[]) {
-        this._tasks = tasks.map(t => new GanttTaskModel(t));
+        this._tasks = tasks.map(t => new GanttTaskModel(t as any));
     }
     public get tasks() { return this._tasks; }
 

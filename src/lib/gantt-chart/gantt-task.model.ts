@@ -1,6 +1,6 @@
 let GANTT_TASK_UNIQUE_ID = 1;
 
-interface GanttInputModel {
+export interface GanttInputModel {
     id?: string|number;
     name: string;
     progress: number;
