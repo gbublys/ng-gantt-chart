@@ -1,4 +1,4 @@
-<div style="display: flex;">
+<div class="gantt-task" style="display: flex;">
     <div [style.padding-top]="margin.top + 'px'" class="task-list">
         <div *ngFor="let task of tasks" [style.height]="cellHeight - 1 + 'px'" class="task-entry" (click)="onTaskClick(task)">
             <div  class="flex-container center h-100 ">

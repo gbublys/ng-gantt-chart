@@ -1,5 +1,15 @@
 let GANTT_TASK_UNIQUE_ID = 1;
 
+interface GanttInputModel {
+    id?: string|number;
+    name: string;
+    progress: number;
+
+    createdOn: Date;
+    dueTo: Date;
+    dependencies?: number[] | string[];
+}
+
 export class GanttTaskModel {
     id?: string|number;
     name: string;
@@ -12,17 +22,11 @@ export class GanttTaskModel {
     /** Unique id that should not be altered.*/
     private _gUniqueId?: number;
 
-    constructor(data) {
+    constructor(data: GanttInputModel) {
         Object.assign(this, data);
-        this.gUniqueId = GanttTaskModel.getNetUniqueId();
+        this.gUniqueId = GANTT_TASK_UNIQUE_ID++;
     }
 
     public set gUniqueId(value: number) { this._gUniqueId = value; }
     public get gUniqueId(): number { return this._gUniqueId; }
-
-
-    /** Generates a new unique id for GanttTaskModel to be tracked as Y axis. */
-    static getNetUniqueId(): number {
-        return GANTT_TASK_UNIQUE_ID++;
-    }
 }
