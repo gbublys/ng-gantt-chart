@@ -1,4 +1,5 @@
 export class GanttTaskModel {
+    id?: string|number;
     name: string;
     progress: number;
 

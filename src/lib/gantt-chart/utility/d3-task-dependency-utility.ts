@@ -31,14 +31,18 @@ export class D3TaskDependencyUtility {
     private drawDependencies() {
         this.taskUtility.tasks
             .selectAll('.dependencies')
-            .filter((t: GanttTaskModel) => !!t.dependencies)
+            .selectAll('path')
+            // .filter((t: GanttTaskModel) => !!t.dependencies)
+            // .data([1, 2])
+            // .append((c) => { console.log(`CCC:`, c); });
             .data((t: GanttTaskModel) => {
                 const dependencies = this.getDependencies(t);
-
-                return dependencies.map(d => {
-                    return { task: t, dependency: d };
-                });
+                console.log(`DEP`, dependencies.map((d) => { return { dependency: d, task: t }; }));
+                return dependencies.map((d) => { return { dependency: d, task: t }; });
             })
+            // .append('g').attr('class', 'gg');
+            // .append('path').attr('class', 'hello');
+            .enter()
             .append('path').attr('d', (data) => this.createPath(data));
     }
 
@@ -59,7 +63,9 @@ export class D3TaskDependencyUtility {
     private getDependencies(task: GanttTaskModel): GanttTaskModel[] {
         task.dependencies = task.dependencies || [];
 
-        return [this.tasks[0]];
+        return (task.dependencies as any[]).map((id) => {
+            return this.tasks.find(t => t.id === id);
+        });
     }
 
     private getTaskCenterX(task: GanttTaskModel): number {

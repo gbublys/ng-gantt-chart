@@ -3,6 +3,8 @@ import {GanttTaskModel} from '../gantt-task.model';
 import {Selection} from 'd3-selection';
 import {D3SvgContainerUtilityService} from './d3-svg-container-utility.service';
 
+let GANT_TASK_UNIQUE_ID = 1;
+
 @Injectable()
 export class D3TaskUtilityService {
 
@@ -12,6 +14,11 @@ export class D3TaskUtilityService {
 
     /** Initialises tasks */
     public initTasks(svg: Selection<any, any, any, any>, tasks: GanttTaskModel[]) {
+        tasks = tasks.map(t => {
+            t['gUniqueId'] = GANT_TASK_UNIQUE_ID++;
+            return t;
+        });
+
         this.tasks = svg.append('g')
             .attr('class', 'task-list')
             .selectAll('rect')
