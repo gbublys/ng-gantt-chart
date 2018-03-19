@@ -4,118 +4,118 @@ $task-progress-bg: rgb(68, 135, 239);
 $task-overall-bg: lighten($task-progress-bg, 20);
 
 .flex-container {
-  list-style: none;
-  float: left;
+    list-style: none;
+    float: left;
 
-  -ms-box-orient: horizontal;
-  display: -webkit-box;
-  display: -moz-box;
-  display: -ms-flexbox;
-  display: -moz-flex;
-  display: -webkit-flex;
-  display: flex;
-  //
-  //-webkit-flex-flow: row wrap;
-  //flex-flow: row wrap;
+    -ms-box-orient: horizontal;
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: -moz-flex;
+    display: -webkit-flex;
+    display: flex;
+    //
+    //-webkit-flex-flow: row wrap;
+    //flex-flow: row wrap;
 }
 
 .h-100 {
-  height: 100%;
+    height: 100%;
 }
 
 .center {
-  -webkit-align-items: center;
-  align-items: center;
+    -webkit-align-items: center;
+    align-items: center;
 }
 
 .task-list {
-  border: $border;
+    border: $border;
 }
 
 .task-entry {
-  padding-left: 10px;
-  padding-right: 10px;
+    padding-left: 10px;
+    padding-right: 10px;
 
-  border-bottom: $border;
+    border-bottom: $border;
 
-  &:first-child {
-    margin-top: -1px;
-  }
+    &:first-child {
+        margin-top: -1px;
+    }
 }
 
 .axis {
-  //font: 10px sans-serif;
-  font: 12px Roboto;
+    //font: 10px sans-serif;
+    font: 12px Roboto;
 
-  .tick text{
-    fill: rgb(117, 117, 117);
-  }
+    .tick text{
+        fill: rgb(117, 117, 117);
+    }
 }
 
 .axis path,
 .axis line {
-  fill: none;
-  stroke: rgb(158, 158, 158);
-  shape-rendering: crispEdges;
+    fill: none;
+    stroke: rgb(158, 158, 158);
+    shape-rendering: crispEdges;
 }
 
 .axis-title {
-  fill: none;
-  stroke: black;
-  stroke-width: 0.5px;
+    fill: none;
+    stroke: black;
+    stroke-width: 0.5px;
 }
 
 .viewport {
-  overflow: auto;
+    overflow: auto;
 }
 
 .axis--x path {
-  /*display: none;*/
-}
-
-.dependency {
-  path {
-    fill: none;
-    stroke: $task-overall-bg;
-  }
+    /*display: none;*/
 }
 
 .grid {
-  .domain {
-    stroke: none;
-  }
+    .domain {
+        stroke: none;
+    }
 
-  line {
-    stroke: lightgrey;
-    stroke-opacity: 0.7;
-    shape-rendering: crispEdges;
-  }
+    line {
+        stroke: lightgrey;
+        stroke-opacity: 0.7;
+        shape-rendering: crispEdges;
+    }
 }
 
 .task-list {
-  .task {
-    text {
-      fill: white;
-      text-anchor: middle;
-      alignment-baseline: middle;
+    .task {
+        text {
+            fill: white;
+            text-anchor: middle;
+            alignment-baseline: middle;
+        }
+
+        .progress {
+            fill: $task-progress-bg;
+        }
+
+        .task-bg {
+            fill: $task-overall-bg;
+        }
+
+        &:hover {
+            .progress {
+                fill: darken($task-progress-bg, 6);
+            }
+
+            .task-bg {
+                fill: darken($task-overall-bg, 6);
+            }
+        }
     }
 
-    .progress {
-      fill: $task-progress-bg;
+    .dependencies {
+        path {
+            fill: none;
+            stroke: #7b7b7b;
+        }
     }
-
-    .task-bg {
-      fill: $task-overall-bg;
-    }
-
-    &:hover {
-      .progress {
-        fill: darken($task-progress-bg, 6);
-      }
-
-      .task-bg {
-        fill: darken($task-overall-bg, 6);
-      }
-    }
-  }
 }

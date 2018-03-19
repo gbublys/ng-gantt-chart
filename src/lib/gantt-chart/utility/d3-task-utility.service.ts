@@ -19,6 +19,7 @@ export class D3TaskUtilityService {
             .enter()
             .append('g').attr('class', 'task'); // Create a task container
 
+        this.tasks.append('g').attr('class', 'dependencies'); // Create a placeholder for dependency arrows.
         this.tasks.append('rect').attr('class', 'task-bg'); // Create a placeholder for estimation
         this.tasks.append('rect').attr('class', 'progress'); // Create a placeholder for progress
         this.tasks.append('text'); // Create a placeholder for text

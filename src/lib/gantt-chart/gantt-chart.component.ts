@@ -8,6 +8,7 @@ import * as d3Path from 'd3-path';
 import * as d3timeFormat from 'd3-time-format';
 import {D3TaskUtilityService} from './utility/d3-task-utility.service';
 import {D3SvgContainerUtilityService} from './utility/d3-svg-container-utility.service';
+import {D3TaskDependencyUtility} from './utility/d3-task-dependency-utility';
 
 
 @Component({
@@ -18,6 +19,7 @@ import {D3SvgContainerUtilityService} from './utility/d3-svg-container-utility.s
     providers: [
         D3SvgContainerUtilityService,
         D3TaskUtilityService,
+        D3TaskDependencyUtility,
     ]
 })
 export class GanttChartComponent implements OnInit {
@@ -38,7 +40,8 @@ export class GanttChartComponent implements OnInit {
     @Output() public taskClick = new EventEmitter<GanttTaskModel>();
 
     constructor(private d3ContainerUtility: D3SvgContainerUtilityService,
-                private d3TaskUtility: D3TaskUtilityService) {
+                private d3TaskUtility: D3TaskUtilityService,
+                private d3DependenciesUtility: D3TaskDependencyUtility) {
         this.width = window.innerWidth - this.margin.left - this.margin.right;
         this.height = window.innerHeight - this.margin.top - this.margin.bottom;
     }
@@ -46,17 +49,20 @@ export class GanttChartComponent implements OnInit {
     ngOnInit(): void {
         this.initContainer();
         this.initAxis();
+        this.initDependencies();
 
         this.drawGrid();
         this.drawTasks();
+        this.drawDependencies();
         this.drawAxis();
-
-        // this.drawRequirement(this.tasks[0], this.tasks[2]);
-        // this.drawRequirement(this.tasks[2], this.tasks[4]);
     }
 
-    public test() {
-        console.log(this.d3TaskUtility.tasks);
+    public getHeight(): number {
+        return this.tasks.length * this.cellHeight;
+    }
+
+    public getWidth(): number {
+        return this.getDateDiffInDays() * this.cellWidth;
     }
 
     private initContainer() {
@@ -86,37 +92,12 @@ export class GanttChartComponent implements OnInit {
             .call(d3Axis.axisBottom(this.xScale).ticks(this.getDateDiffInDays()).tickFormat(this.getDateFormat()));
     }
 
-    private drawRequirement(requiredTask: GanttTaskModel, requiredTaskBy: GanttTaskModel) {
-        // Create path.
-        const path = d3Path.path();
+    private initDependencies() {
+        this.d3DependenciesUtility.init(this.tasks);
+    }
 
-        const curveX0 = (this.xScale(requiredTask.dueTo) - this.xScale(requiredTask.createdOn)) / 2 + this.xScale(requiredTask.createdOn);
-        const curveY0 = this.yScale(requiredTaskBy.name);
-
-        const curveX1 = curveX0 + this.cellHeight / 2;
-        const curveY1 = curveY0 + this.cellHeight / 2;
-
-        // Draw vertical line to requiredTaskBy.
-        path.moveTo(curveX0, this.yScale(requiredTask.name) + this.cellHeight);
-        path.lineTo(curveX0, curveY0);
-
-        // Bend the curve
-        path.bezierCurveTo(curveX0, curveY0 + this.cellHeight / 2, curveX1, curveY1, curveX1, curveY1);
-
-        // Finish line to task.
-        path.lineTo(this.xScale(requiredTaskBy.createdOn), this.yScale(requiredTaskBy.name) + this.cellHeight / 2);
-
-        // Append arrow head.
-        path.lineTo(this.xScale(requiredTaskBy.createdOn) - this.cellHeight / 10, this.yScale(requiredTaskBy.name) + this.cellHeight / 2.5);
-        path.lineTo(this.xScale(requiredTaskBy.createdOn), this.yScale(requiredTaskBy.name) + this.cellHeight / 2);
-        path.lineTo(this.xScale(requiredTaskBy.createdOn) - this.cellHeight / 10 , this.yScale(requiredTaskBy.name) + (this.cellHeight - this.cellHeight / 2.5));
-
-        // Append line to graph
-        this.d3ContainerUtility.svg
-            .append('g')
-            .attr('class', 'dependency')
-            .append('path')
-            .attr('d', path);
+    private drawDependencies() {
+        this.d3DependenciesUtility.invalidate();
     }
 
     /** Returns a user specified time format. If none was specified - a null will be returned. */
@@ -151,14 +132,6 @@ export class GanttChartComponent implements OnInit {
     /** Emit that task was clicked */
     private onTaskClick(task: GanttTaskModel) {
         this.taskClick.emit(task);
-    }
-
-    private getHeight(): number {
-        return this.tasks.length * this.cellHeight;
-    }
-
-    private getWidth(): number {
-        return this.getDateDiffInDays() * this.cellWidth;
     }
 
     private getDateDiffInDays(): number {

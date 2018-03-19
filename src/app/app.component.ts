@@ -18,7 +18,10 @@ const Tasks: GanttTaskModel[] = [
         createdOn: new Date('2014-03-11T12:00:00.000Z'),
         dueTo: new Date('2014-03-12T15:00:00.000Z'),
         name: 'Task 3',
-        progress: 100
+        progress: 100,
+        dependencies: [
+            1, 2
+        ]
     },
     {
         createdOn: new Date('2014-03-12T15:00:00.000Z'),
@@ -30,7 +33,10 @@ const Tasks: GanttTaskModel[] = [
         createdOn: new Date('2014-03-12T15:00:00.000Z'),
         dueTo: new Date('2014-03-21T00:00:00.000Z'),
         name: 'Task 5',
-        progress: 32
+        progress: 32,
+        dependencies: [
+            1, 2
+        ]
     },
     {
         createdOn: new Date('2014-03-21T00:00:00.000Z'),
@@ -41,7 +47,7 @@ const Tasks: GanttTaskModel[] = [
 ];
 
 @Component({
-    selector: 'app-root',
+    selector: 'ng-root',
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.scss'],
 })
