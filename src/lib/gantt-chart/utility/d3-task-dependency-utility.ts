@@ -1,10 +1,8 @@
 import {GanttTaskModel} from '../gantt-task.model';
 import * as d3Path from 'd3-path';
-import * as d3Selection from 'd3-selection';
 import {D3SvgContainerUtilityService} from './d3-svg-container-utility.service';
 import {Injectable} from '@angular/core';
 import {D3TaskUtilityService} from './d3-task-utility.service';
-import {Path} from 'd3-path';
 
 @Injectable()
 export class D3TaskDependencyUtility {
@@ -32,16 +30,10 @@ export class D3TaskDependencyUtility {
         this.taskUtility.tasks
             .selectAll('.dependencies')
             .selectAll('path')
-            // .filter((t: GanttTaskModel) => !!t.dependencies)
-            // .data([1, 2])
-            // .append((c) => { console.log(`CCC:`, c); });
             .data((t: GanttTaskModel) => {
                 const dependencies = this.getDependencies(t);
-                console.log(`DEP`, dependencies.map((d) => { return { dependency: d, task: t }; }));
                 return dependencies.map((d) => { return { dependency: d, task: t }; });
             })
-            // .append('g').attr('class', 'gg');
-            // .append('path').attr('class', 'hello');
             .enter()
             .append('path').attr('d', (data) => this.createPath(data));
     }
@@ -81,14 +73,14 @@ export class D3TaskDependencyUtility {
     }
 
     private getTaskStartY(task: GanttTaskModel): number {
-        return this.scaleY(task.name);
+        return this.scaleY(task.gUniqueId);
     }
 
     private getTaskCenterY(task: GanttTaskModel): number {
-        return this.scaleY(task.name) + this.svgContainer.getCellHeight() / 2;
+        return this.scaleY(task.gUniqueId) + this.svgContainer.getCellHeight() / 2;
     }
 
     private getTaskEndY(task: GanttTaskModel): number {
-        return this.scaleY(task.name) + this.svgContainer.getCellHeight();
+        return this.scaleY(task.gUniqueId) + this.svgContainer.getCellHeight();
     }
 }

@@ -4,7 +4,6 @@ import {GanttTaskModel} from './gantt-task.model';
 import * as d3Scale from 'd3-scale';
 import * as d3Array from 'd3-array';
 import * as d3Axis from 'd3-axis';
-import * as d3Path from 'd3-path';
 import * as d3timeFormat from 'd3-time-format';
 import {D3TaskUtilityService} from './utility/d3-task-utility.service';
 import {D3SvgContainerUtilityService} from './utility/d3-svg-container-utility.service';
@@ -30,7 +29,7 @@ export class GanttChartComponent implements OnInit {
     protected xScale: any;
     protected yScale: any;
 
-    @Input() public tasks: GanttTaskModel[];
+    private _tasks: GanttTaskModel[];
     @Input() public cellHeight = 50;
     @Input() public cellWidth = 50;
     @Input() public dateFormat: string  = null;
@@ -45,8 +44,7 @@ export class GanttChartComponent implements OnInit {
         this.width = window.innerWidth - this.margin.left - this.margin.right;
         this.height = window.innerHeight - this.margin.top - this.margin.bottom;
     }
-
-    ngOnInit(): void {
+    public ngOnInit(): void {
         this.initContainer();
         this.initAxis();
         this.initDependencies();
@@ -57,11 +55,16 @@ export class GanttChartComponent implements OnInit {
         this.drawAxis();
     }
 
-    public getHeight(): number {
-        return this.tasks.length * this.cellHeight;
+    @Input() public set tasks(tasks: GanttTaskModel[]) {
+        this._tasks = tasks.map(t => new GanttTaskModel(t));
     }
+    public get tasks() { return this._tasks; }
+
+
+    public getHeight(): number { return this.tasks.length * this.cellHeight; }
 
     public getWidth(): number {
+        // TODO: try to get max width and return the one that is higher.
         return this.getDateDiffInDays() * this.cellWidth;
     }
 
@@ -79,7 +82,7 @@ export class GanttChartComponent implements OnInit {
             d3Array.max(this.tasks, (d) => d.dueTo),
         ]);
 
-        this.yScale.domain(this.tasks.map((t) => t.name ));
+        this.yScale.domain(this.tasks.map((t) => t.gUniqueId ));
 
         this.d3ContainerUtility.xScale = this.xScale;
         this.d3ContainerUtility.yScale = this.yScale;
