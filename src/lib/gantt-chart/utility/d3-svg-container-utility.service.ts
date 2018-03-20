@@ -10,6 +10,7 @@ export class D3SvgContainerUtilityService {
     public yScale;
 
     public init(selector: string) {
+        d3Selection.select('g').remove();
         this.svg = d3Selection.select(selector).append('g');
     }
 

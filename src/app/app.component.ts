@@ -9,14 +9,15 @@ const Tasks: GanttTaskModel[] = [
         name: 'Task 1 A long title here',
         progress: 100
     }),
+
     new GanttTaskModel({
         id: 2,
         startAt: new Date('2014-03-09T12:00:00.000Z'),
         dueTo: new Date('2014-03-11T12:00:00.000Z'),
         name: 'Task 2',
-        progress: 100
+        progress: 50
     }),
-    new GanttTaskModel({
+    /* new GanttTaskModel({
         id: 3,
         startAt: new Date('2014-03-11T12:00:00.000Z'),
         dueTo: new Date('2014-03-12T15:00:00.000Z'),
@@ -60,16 +61,13 @@ const Tasks: GanttTaskModel[] = [
         dueTo: new Date('2014-03-25T00:00:00.000Z'),
         name: 'Task 8',
         progress: 5
-    }),
+    }),*/
 ];
 
 @Component({
     selector: 'ng-root',
     template: '<ng-gantt-chart [tasks]="tasks" (taskClick)="test($event)"></ng-gantt-chart>',
-    styleUrls: ['./app.component.scss'],
-    styles: [
-        '::ng-deep .task-list { width: 100px; white-space: nowrap; overflow: hidden;}'
-    ]
+    styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
     public tasks = Tasks;

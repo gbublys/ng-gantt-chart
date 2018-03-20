@@ -1,4 +1,7 @@
-import {Component, EventEmitter, Input, OnInit, Output, ViewEncapsulation} from '@angular/core';
+import {
+    AfterContentInit, AfterViewInit, Component, ElementRef, EventEmitter, HostListener, Input, OnInit, Output, ViewChild,
+    ViewEncapsulation
+} from '@angular/core';
 import {GanttTaskModel} from './gantt-task.model';
 
 import * as d3Scale from 'd3-scale';
@@ -23,35 +26,44 @@ import {D3TaskDependencyUtility} from './utility/d3-task-dependency-utility';
 export class GanttChartComponent implements OnInit {
 
     public margin = {top: 1, right: 1, bottom: 30, left: 0};
-    private width: number;
-    private height: number;
+
     private xScale: any;
     private yScale: any;
 
     private _tasks: GanttTaskModel[];
+
     @Input() public cellHeight = 50;
-    @Input() public cellWidth = 50;
-    @Input() public dateFormat: string  = null;
+    @Input() public cellWidth = null;
+    @Input() public tickCount = null;
+
+    @Input() public dateFormat: string;
     @Input() public vGrid = true;
     @Input() public hGrid = true;
 
     @Output() public taskClick = new EventEmitter<GanttTaskModel>();
 
+    @ViewChild('chartContainer', { read: ElementRef }) public chartContainer: ElementRef;
+
     constructor(private d3ContainerUtility: D3SvgContainerUtilityService,
                 private d3TaskUtility: D3TaskUtilityService,
-                private d3DependenciesUtility: D3TaskDependencyUtility) {
-        this.width = window.innerWidth - this.margin.left - this.margin.right;
-        this.height = window.innerHeight - this.margin.top - this.margin.bottom;
-    }
-    public ngOnInit(): void {
-        this.initContainer();
-        this.initAxis();
-        this.initDependencies();
+                private d3DependenciesUtility: D3TaskDependencyUtility) {}
 
-        this.drawGrid();
-        this.drawTasks();
-        this.drawDependencies();
-        this.drawAxis();
+    public ngOnInit(): void {
+        setTimeout(() => {
+            this.initContainer();
+            this.initAxis();
+            this.initDependencies();
+
+            this.drawGrid();
+            this.drawTasks();
+            this.drawDependencies();
+            this.drawAxis();
+        });
+    }
+
+    @HostListener('window:resize', ['$event.target'])
+    public onResize(): void {
+        this.ngOnInit();
     }
 
     @Input() public set tasks(tasks: GanttTaskModel[]) {
@@ -62,8 +74,16 @@ export class GanttChartComponent implements OnInit {
     public getHeight(): number { return this.tasks.length * this.cellHeight; }
 
     public getWidth(): number {
-        // TODO: try to get max width and return the one that is higher.
-        return this.getDateDiffInDays() * this.cellWidth;
+        const width = this.getAvailableChartWidth();
+
+        const suggestedWidth = this.getTickCount() * this.cellWidth;
+        return suggestedWidth > width ? suggestedWidth : width;
+    }
+
+    /** Return the width of the chart that can span. */
+    private getAvailableChartWidth(): number {
+        const chartContainerClientRect = this.chartContainer.nativeElement.getBoundingClientRect();
+        return Math.floor(chartContainerClientRect.width - this.margin.left - this.margin.right);
     }
 
     private initContainer() {
@@ -72,9 +92,10 @@ export class GanttChartComponent implements OnInit {
     }
 
     private initAxis() {
-        this.xScale = d3Scale.scaleTime().range([0, this.getWidth()]);
+        this.xScale = d3Scale.scaleTime();
         this.yScale = d3Scale.scaleBand().range([0, this.getHeight()]);
 
+        this.xScale.range([0, this.getWidth()]);
         this.xScale.domain([
             d3Array.min(this.tasks, (d) => d.startAt),
             d3Array.max(this.tasks, (d) => d.dueTo),
@@ -90,7 +111,7 @@ export class GanttChartComponent implements OnInit {
         this.d3ContainerUtility.svg.append('g')
             .attr('class', 'axis axis--x')
             .attr('transform', `translate(0, ${ this.getHeight() })`)
-            .call(d3Axis.axisBottom(this.xScale).ticks(this.getDateDiffInDays()).tickFormat(this.getDateFormat()));
+            .call(d3Axis.axisBottom(this.xScale).ticks(this.getTickCount()).tickFormat(this.getDateFormat()));
     }
 
     private initDependencies() {
@@ -118,7 +139,7 @@ export class GanttChartComponent implements OnInit {
         if (this.vGrid) {
             this.d3ContainerUtility.svg
                 .append('g')
-                .call(d3Axis.axisBottom(this.xScale).ticks(this.getDateDiffInDays()).tickSize(this.getHeight()).tickFormat('' as any))
+                .call(d3Axis.axisBottom(this.xScale).tickSize(this.getHeight()).ticks(this.getTickCount()).tickFormat('' as any))
                 .attr('class', 'grid');
         }
     }
@@ -135,12 +156,7 @@ export class GanttChartComponent implements OnInit {
         this.taskClick.emit(task);
     }
 
-    private getDateDiffInDays(): number {
-        const minDate: Date = d3Array.min(this.tasks, (t) => t.startAt);
-        const maxDate: Date = d3Array.max(this.tasks, (t) => t.dueTo);
-
-        const oneDay = 1000 * 60 * 60 * 24; // One day in milliseconds
-
-        return Math.ceil((maxDate.getTime() - minDate.getTime()) / oneDay);
+    private getTickCount(): number {
+        return this.tickCount || this.getAvailableChartWidth() / 70;
     }
 }
