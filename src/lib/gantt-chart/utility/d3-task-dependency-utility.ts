@@ -9,8 +9,8 @@ export class D3TaskDependencyUtility {
 
     public tasks: GanttTaskModel[];
 
-    private readonly ARROW_HEIGHT = 30;
-    private readonly ARROW_WIDTH  = 30;
+    private readonly ARROW_HEIGHT = 10;
+    private readonly ARROW_WIDTH  = 5;
 
     constructor(private svgContainer: D3SvgContainerUtilityService,
                 private taskUtility: D3TaskUtilityService) {}
@@ -23,19 +23,20 @@ export class D3TaskDependencyUtility {
         this.drawDependencies();
     }
 
-    private scaleX(value: any): number { return this.svgContainer.applyXScaling(value); }
-    private scaleY(value: any): number { return this.svgContainer.applyYScaling(value); }
-
     private drawDependencies() {
-        this.taskUtility.tasks
+        const tasks = this.taskUtility.tasks
             .selectAll('.dependencies')
             .selectAll('path')
             .data((t: GanttTaskModel) => {
                 const dependencies = this.getDependencies(t);
                 return dependencies.map((d) => { return { dependency: d, task: t }; });
             })
-            .enter()
-            .append('path').attr('d', (data) => this.createPath(data));
+            .enter();
+
+        tasks.append('path').attr('d', (data) => this.createPath(data));
+        tasks.append('path')
+            .attr('class', 'arrow-head')
+            .attr('d', (data) => this.createArrowPointer(data.task));
     }
 
     private createPath(data: {task: GanttTaskModel, dependency: GanttTaskModel }): any {
@@ -44,9 +45,20 @@ export class D3TaskDependencyUtility {
 
         const path = d3Path.path();
 
-        path.moveTo(this.getTaskCenterX(dependency), this.getTaskEndY(dependency));
-        path.lineTo(this.getTaskCenterX(dependency), this.getTaskCenterY(task));
-        path.lineTo(this.getTaskStartX(task), this.getTaskCenterY(task));
+        path.moveTo(this.taskUtility.getTaskCenterX(dependency), this.taskUtility.getTaskEndY(dependency));
+        path.lineTo(this.taskUtility.getTaskCenterX(dependency), this.taskUtility.getTaskCenterY(task));
+        path.lineTo(this.taskUtility.getTaskStartX(task), this.taskUtility.getTaskCenterY(task));
+
+        return path;
+    }
+
+    private createArrowPointer(task: GanttTaskModel): any {
+        const path = d3Path.path();
+
+        path.moveTo(this.taskUtility.getTaskStartX(task), this.taskUtility.getTaskCenterY(task));
+        path.lineTo(this.taskUtility.getTaskStartX(task) - this.ARROW_WIDTH, this.taskUtility.getTaskCenterY(task) - this.ARROW_HEIGHT / 2);
+        path.lineTo(this.taskUtility.getTaskStartX(task) - this.ARROW_WIDTH, this.taskUtility.getTaskCenterY(task) + this.ARROW_HEIGHT / 2);
+        path.closePath();
 
         return path;
     }
@@ -58,29 +70,5 @@ export class D3TaskDependencyUtility {
         return (task.dependencies as any[]).map((id) => {
             return this.tasks.find(t => t.id === id);
         });
-    }
-
-    private getTaskCenterX(task: GanttTaskModel): number {
-        return this.scaleX(task.createdOn) + (this.scaleX(task.dueTo) - this.scaleX(task.createdOn)) / 2;
-    }
-
-    private getTaskStartX(task: GanttTaskModel): number {
-        return this.scaleX(task.createdOn);
-    }
-
-    private getTaskEndX(task: GanttTaskModel): number {
-        return this.scaleX(task.dueTo);
-    }
-
-    private getTaskStartY(task: GanttTaskModel): number {
-        return this.scaleY(task.gUniqueId);
-    }
-
-    private getTaskCenterY(task: GanttTaskModel): number {
-        return this.scaleY(task.gUniqueId) + this.svgContainer.getCellHeight() / 2;
-    }
-
-    private getTaskEndY(task: GanttTaskModel): number {
-        return this.scaleY(task.gUniqueId) + this.svgContainer.getCellHeight();
     }
 }

@@ -6,7 +6,8 @@ import {D3SvgContainerUtilityService} from './d3-svg-container-utility.service';
 @Injectable()
 export class D3TaskUtilityService {
 
-    tasks: Selection<any, any, any, any>;
+    public tasks: Selection<any, GanttTaskModel, any, any>;
+    public taskMargin = { left: 0, top: 2, bottom: 3, right: 0 };
 
     constructor(private chartContainer: D3SvgContainerUtilityService) {}
 
@@ -32,23 +33,51 @@ export class D3TaskUtilityService {
         const scaleY = (i) => this.chartContainer.applyYScaling(i);
 
         this.tasks.selectAll('.task-bg')
-            .attr('x', (d: GanttTaskModel) => scaleX(d.createdOn))
-            .attr('y', (d: GanttTaskModel) => scaleY(d.gUniqueId) + 2)
+            .attr('x', (t: GanttTaskModel) => this.getTaskStartX(t))
+            .attr('y', (t: GanttTaskModel) => this.getTaskStartY(t))
             .attr('ry', 3)
-            .attr('height', (d) => this.chartContainer.getCellHeight() - 5)
-            .attr('width', (d: GanttTaskModel) => scaleX(d.dueTo) - scaleX(d.createdOn));
+            .attr('height', (t) => this.chartContainer.getCellHeight() - this.taskMargin.top - this.taskMargin.bottom)
+            .attr('width', (t: GanttTaskModel) => this.getTaskEndX(t) - this.getTaskStartX(t));
 
         this.tasks.selectAll('.progress')
-            .attr('x', (d: GanttTaskModel) => scaleX(d.createdOn))
-            .attr('y', (d: GanttTaskModel) => scaleY(d.gUniqueId) + 2)
+            .attr('x', (t: GanttTaskModel) => this.getTaskStartX(t))
+            .attr('y', (t: GanttTaskModel) => this.getTaskStartY(t))
             .attr('ry', 3)
-            .attr('height', (d) => this.chartContainer.getCellHeight() - 5)
-            .attr('width', (d: GanttTaskModel) => (scaleX(d.dueTo) - scaleX(d.createdOn)) * d.progress / 100);
+            .attr('height', (t) => this.chartContainer.getCellHeight() - this.taskMargin.top - this.taskMargin.bottom)
+            .attr('width', (d: GanttTaskModel) => (scaleX(d.dueTo) - scaleX(d.startAt)) * d.progress / 100);
 
         this.tasks
             .selectAll('text')
             .text((d: GanttTaskModel) => `${ d.progress }%`)
-            .attr('x', (task: GanttTaskModel) => (scaleX(task.dueTo) - scaleX(task.createdOn)) / 2 + scaleX(task.createdOn))
+            .attr('x', (task: GanttTaskModel) => (scaleX(task.dueTo) - scaleX(task.startAt)) / 2 + scaleX(task.startAt))
             .attr('y', (task: GanttTaskModel) => scaleY(task.gUniqueId) + this.chartContainer.getCellHeight() / 2);
+    }
+
+
+    public scaleX(value: any): number { return this.chartContainer.applyXScaling(value); }
+    public scaleY(value: any): number { return this.chartContainer.applyYScaling(value); }
+
+    public getTaskCenterX(task: GanttTaskModel): number {
+        return this.scaleX(task.startAt) + (this.scaleX(task.dueTo) - this.scaleX(task.startAt)) / 2;
+    }
+
+    public getTaskStartX(task: GanttTaskModel): number {
+        return this.scaleX(task.startAt) + this.taskMargin.left;
+    }
+
+    public getTaskEndX(task: GanttTaskModel): number {
+        return this.scaleX(task.dueTo);
+    }
+
+    public getTaskStartY(task: GanttTaskModel): number {
+        return this.scaleY(task.gUniqueId) + this.taskMargin.top;
+    }
+
+    public getTaskCenterY(task: GanttTaskModel): number {
+        return this.scaleY(task.gUniqueId) + this.chartContainer.getCellHeight() / 2;
+    }
+
+    public getTaskEndY(task: GanttTaskModel): number {
+        return this.scaleY(task.gUniqueId) + this.chartContainer.getCellHeight() - this.taskMargin.bottom;
     }
 }

@@ -9,7 +9,6 @@ import {D3TaskUtilityService} from './utility/d3-task-utility.service';
 import {D3SvgContainerUtilityService} from './utility/d3-svg-container-utility.service';
 import {D3TaskDependencyUtility} from './utility/d3-task-dependency-utility';
 
-
 @Component({
     selector: 'ng-gantt-chart',
     templateUrl: './gantt-chart.component.html',
@@ -26,8 +25,8 @@ export class GanttChartComponent implements OnInit {
     public margin = {top: 1, right: 1, bottom: 30, left: 0};
     private width: number;
     private height: number;
-    protected xScale: any;
-    protected yScale: any;
+    private xScale: any;
+    private yScale: any;
 
     private _tasks: GanttTaskModel[];
     @Input() public cellHeight = 50;
@@ -60,7 +59,6 @@ export class GanttChartComponent implements OnInit {
     }
     public get tasks() { return this._tasks; }
 
-
     public getHeight(): number { return this.tasks.length * this.cellHeight; }
 
     public getWidth(): number {
@@ -78,7 +76,7 @@ export class GanttChartComponent implements OnInit {
         this.yScale = d3Scale.scaleBand().range([0, this.getHeight()]);
 
         this.xScale.domain([
-            d3Array.min(this.tasks, (d) => d.createdOn),
+            d3Array.min(this.tasks, (d) => d.startAt),
             d3Array.max(this.tasks, (d) => d.dueTo),
         ]);
 
@@ -138,7 +136,7 @@ export class GanttChartComponent implements OnInit {
     }
 
     private getDateDiffInDays(): number {
-        const minDate: Date = d3Array.min(this.tasks, (t) => t.createdOn);
+        const minDate: Date = d3Array.min(this.tasks, (t) => t.startAt);
         const maxDate: Date = d3Array.max(this.tasks, (t) => t.dueTo);
 
         const oneDay = 1000 * 60 * 60 * 24; // One day in milliseconds

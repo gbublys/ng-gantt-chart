@@ -116,6 +116,10 @@ $task-overall-bg: lighten($task-progress-bg, 20);
         path {
             fill: none;
             stroke: #7b7b7b;
+
+            &.arrow-head {
+                fill: #7b7b7b;
+            }
         }
     }
 }

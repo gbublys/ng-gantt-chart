@@ -5,7 +5,7 @@ export interface GanttInputModel {
     name: string;
     progress: number;
 
-    createdOn: Date;
+    startAt: Date;
     dueTo: Date;
     dependencies?: number[] | string[];
 }
@@ -15,7 +15,7 @@ export class GanttTaskModel {
     name: string;
     progress: number;
 
-    createdOn: Date;
+    startAt: Date;
     dueTo: Date;
     dependencies?: { key: string, value: string|number }[] | number[] | string[];
 
