@@ -1,6 +1,6 @@
 {
     "name": "ng-gantt-chart",
-    "version": "0.0.13",
+    "version": "0.0.14",
     "private": false,
     "peerDependencies": {
         "@angular/common": "^5.2.0",
