@@ -1,13 +1,13 @@
-import {
-    AfterContentInit, AfterViewInit, Component, ElementRef, EventEmitter, HostListener, Input, OnInit, Output, ViewChild,
-    ViewEncapsulation
-} from '@angular/core';
+import {Component, ElementRef, EventEmitter, HostListener, Input, OnInit, Output, ViewChild, ViewEncapsulation} from '@angular/core';
 import {GanttTaskModel} from './gantt-task.model';
 
 import * as d3Scale from 'd3-scale';
 import * as d3Array from 'd3-array';
 import * as d3Axis from 'd3-axis';
 import * as d3timeFormat from 'd3-time-format';
+import * as d3Zoom from 'd3-zoom';
+import * as d3 from 'd3';
+
 import {D3TaskUtilityService} from './utility/d3-task-utility.service';
 import {D3SvgContainerUtilityService} from './utility/d3-svg-container-utility.service';
 import {D3TaskDependencyUtility} from './utility/d3-task-dependency-utility';
@@ -30,7 +30,11 @@ export class GanttChartComponent implements OnInit {
     private xScale: any;
     private yScale: any;
 
-    private _tasks: GanttTaskModel[];
+    private xAxis: any;
+    private drawnXAxis: any;
+
+    private gridVContainer;
+    private gridHContainer;
 
     @Input() public cellHeight = 50;
     @Input() public cellWidth = null;
@@ -52,12 +56,26 @@ export class GanttChartComponent implements OnInit {
         setTimeout(() => {
             this.initContainer();
             this.initAxis();
+            this.initGrid();
+            this.initTasks();
             this.initDependencies();
 
             this.drawGrid();
             this.drawTasks();
             this.drawDependencies();
             this.drawAxis();
+
+            this.d3ContainerUtility.svgContainer.call(
+                d3Zoom.zoom()
+                    .scaleExtent([1, 4])
+                    .translateExtent(
+                        [
+                            [0, 0],
+                            [this.getWidth(), 0]
+                        ]
+                    )
+                    .on('zoom', () => this.onZoom())
+            );
         });
     }
 
@@ -67,9 +85,9 @@ export class GanttChartComponent implements OnInit {
     }
 
     @Input() public set tasks(tasks: GanttTaskModel[]) {
-        this._tasks = tasks.map(t => new GanttTaskModel(t as any));
+        this.d3TaskUtility.tasks = tasks.map(t => new GanttTaskModel(t as any));
     }
-    public get tasks() { return this._tasks; }
+    public get tasks() { return this.d3TaskUtility.tasks; }
 
     public getHeight(): number { return this.tasks.length * this.cellHeight; }
 
@@ -78,6 +96,21 @@ export class GanttChartComponent implements OnInit {
 
         const suggestedWidth = this.getTickCount() * this.cellWidth;
         return suggestedWidth > width ? suggestedWidth : width;
+    }
+
+    private onZoom() {
+        const updateXScale = d3.event.transform.rescaleX(this.xScale);
+
+        // re-scale y axis during zoom; ref [2]
+        this.drawnXAxis.transition()
+            .duration(50)
+            .call(this.xAxis.scale(updateXScale));
+
+        this.d3ContainerUtility.xScale = updateXScale;
+
+        this.d3TaskUtility.invalidate();
+        this.drawGrid();
+        this.d3DependenciesUtility.invalidate();
     }
 
     /** Return the width of the chart that can span. */
@@ -105,17 +138,28 @@ export class GanttChartComponent implements OnInit {
 
         this.d3ContainerUtility.xScale = this.xScale;
         this.d3ContainerUtility.yScale = this.yScale;
+
+        this.xAxis = d3Axis.axisBottom(this.xScale).ticks(10).tickFormat(this.getDateFormat());
     }
 
     private drawAxis() {
-        this.d3ContainerUtility.svg.append('g')
+        this.drawnXAxis = this.d3ContainerUtility.svg.append('g')
             .attr('class', 'axis axis--x')
             .attr('transform', `translate(0, ${ this.getHeight() })`)
-            .call(d3Axis.axisBottom(this.xScale).ticks(this.getTickCount()).tickFormat(this.getDateFormat()));
+            .call(this.xAxis);
+    }
+
+    private initGrid() {
+        this.gridVContainer = this.d3ContainerUtility.svg.append('g').attr('class', 'v-grid');
+        this.gridHContainer = this.d3ContainerUtility.svg.append('g').attr('class', 'h-grid');
+    }
+
+    private initTasks() {
+        this.d3TaskUtility.init();
     }
 
     private initDependencies() {
-        this.d3DependenciesUtility.init(this.tasks);
+        this.d3DependenciesUtility.init();
     }
 
     private drawDependencies() {
@@ -129,26 +173,28 @@ export class GanttChartComponent implements OnInit {
 
     private drawGrid() {
         if (this.hGrid) {
-            this.d3ContainerUtility.svg
-                .append('g')
+            this.gridHContainer
+                .transition().duration(50)
                 .call( d3Axis.axisLeft(this.yScale).ticks(this.tasks.length).tickSize(-this.getWidth()).tickFormat('' as any) )
                 .attr('transform', `translate(0, ${ -this.cellHeight / 2 })`)
                 .attr('class', 'grid');
         }
 
         if (this.vGrid) {
-            this.d3ContainerUtility.svg
-                .append('g')
-                .call(d3Axis.axisBottom(this.xScale).tickSize(this.getHeight()).ticks(this.getTickCount()).tickFormat('' as any))
+            this.gridVContainer
+                .transition().duration(50)
+                .call(
+                    d3Axis
+                        .axisBottom(this.d3ContainerUtility.xScale)
+                        .tickSize(this.getHeight())
+                        .tickFormat('' as any))
                 .attr('class', 'grid');
         }
     }
 
     private drawTasks() {
-        this.d3TaskUtility.initTasks(this.d3ContainerUtility.svg, this.tasks);
         this.d3TaskUtility.invalidate();
-
-        this.d3TaskUtility.tasks.on('click', (task) => this.onTaskClick(task));
+        // this.d3TaskUtility.d3Tasks.on('click', (task) => this.onTaskClick(task));
     }
 
     /** Emit that task was clicked */

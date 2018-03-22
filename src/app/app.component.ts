@@ -14,10 +14,12 @@ const Tasks: GanttTaskModel[] = [
         id: 2,
         startAt: new Date('2014-03-09T12:00:00.000Z'),
         dueTo: new Date('2014-03-11T12:00:00.000Z'),
+        // duration: new Date(1000 * 60 * 60  * 24), // One day - 1 second * 60 seconds * 60 minutes * 24 hours
         name: 'Task 2',
-        progress: 50
+        progress: 50,
+        dependencies: [ 1 ]
     }),
-    /* new GanttTaskModel({
+    new GanttTaskModel({
         id: 3,
         startAt: new Date('2014-03-11T12:00:00.000Z'),
         dueTo: new Date('2014-03-12T15:00:00.000Z'),
@@ -27,7 +29,7 @@ const Tasks: GanttTaskModel[] = [
             1, 2
         ]
     }),
-    new GanttTaskModel({
+    /* new GanttTaskModel({
         id: 4,
         startAt: new Date('2014-03-12T15:00:00.000Z'),
         dueTo: new Date('2014-03-18T12:00:00.000Z'),

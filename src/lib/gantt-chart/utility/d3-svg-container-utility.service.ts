@@ -6,12 +6,16 @@ export class D3SvgContainerUtilityService {
 
     public svg;
 
+    /** Real svg container. */
+    public svgContainer;
+
     public xScale;
     public yScale;
 
     public init(selector: string) {
         d3Selection.select('g').remove();
-        this.svg = d3Selection.select(selector).append('g');
+        this.svgContainer = d3Selection.select(selector);
+        this.svg = this.svgContainer.append('g');
     }
 
     public applyMargin(margin: { left: number; top: number; right: number; bottom: number; }) {

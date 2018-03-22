@@ -7,24 +7,16 @@ import {D3TaskUtilityService} from './d3-task-utility.service';
 @Injectable()
 export class D3TaskDependencyUtility {
 
-    public tasks: GanttTaskModel[];
-
     private readonly ARROW_HEIGHT = 10;
     private readonly ARROW_WIDTH  = 5;
+
+    private test;
 
     constructor(private svgContainer: D3SvgContainerUtilityService,
                 private taskUtility: D3TaskUtilityService) {}
 
-    public init(tasks: GanttTaskModel[]) {
-        this.tasks = tasks;
-    }
-
-    public invalidate() {
-        this.drawDependencies();
-    }
-
-    private drawDependencies() {
-        const tasks = this.taskUtility.tasks
+    public init() {
+        this.test = this.taskUtility.d3Tasks
             .selectAll('.dependencies')
             .selectAll('path')
             .data((t: GanttTaskModel) => {
@@ -33,9 +25,21 @@ export class D3TaskDependencyUtility {
             })
             .enter();
 
-        tasks.append('path').attr('d', (data) => this.createPath(data));
-        tasks.append('path')
-            .attr('class', 'arrow-head')
+        this.test.append('path').attr('class', 'arrow-body');
+        this.test.append('path').attr('class', 'arrow-head');
+    }
+
+    public invalidate() {
+        this.drawDependencies();
+    }
+
+    private drawDependencies() {
+        this.test.selectAll('.arrow-body')
+            .transition().duration(50)
+            .attr('d', (data) => this.createPath(data));
+
+        this.test.selectAll('.arrow-head')
+            .transition().duration(50)
             .attr('d', (data) => this.createArrowPointer(data.task));
     }
 
@@ -68,7 +72,7 @@ export class D3TaskDependencyUtility {
         task.dependencies = task.dependencies || [];
 
         return (task.dependencies as any[]).map((id) => {
-            return this.tasks.find(t => t.id === id);
+            return this.taskUtility.tasks.find(t => t.id === id);
         });
     }
 }
