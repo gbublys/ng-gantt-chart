@@ -17,7 +17,7 @@ export class D3TaskDependencyUtility {
 
     public init() {
         this.test = this.taskUtility.d3Tasks
-            .selectAll('.dependencies')
+            .selectAll('.gantt-dependencies')
             .selectAll('path')
             .data((t: GanttTaskModel) => {
                 const dependencies = this.getDependencies(t);
@@ -25,8 +25,8 @@ export class D3TaskDependencyUtility {
             })
             .enter();
 
-        this.test.append('path').attr('class', 'arrow-body');
-        this.test.append('path').attr('class', 'arrow-head');
+        this.test.append('path').attr('class', 'gantt-arrow-body');
+        this.test.append('path').attr('class', 'gantt-arrow-head');
     }
 
     public invalidate() {
@@ -34,11 +34,11 @@ export class D3TaskDependencyUtility {
     }
 
     private drawDependencies() {
-        this.test.selectAll('.arrow-body')
+        this.test.selectAll('.gantt-arrow-body')
             .transition().duration(50)
             .attr('d', (data) => this.createPath(data));
 
-        this.test.selectAll('.arrow-head')
+        this.test.selectAll('.gantt-arrow-head')
             .transition().duration(50)
             .attr('d', (data) => this.createArrowPointer(data.task));
     }

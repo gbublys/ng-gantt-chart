@@ -28,21 +28,6 @@ $task-overall-bg: lighten($task-progress-bg, 20);
     align-items: center;
 }
 
-.task-list {
-    border: $border;
-}
-
-.task-entry {
-    padding-left: 10px;
-    padding-right: 10px;
-
-    border-bottom: $border;
-
-    &:first-child {
-        margin-top: -1px;
-    }
-}
-
 .axis {
     //font: 10px sans-serif;
     font: 12px Roboto;
@@ -65,10 +50,6 @@ $task-overall-bg: lighten($task-progress-bg, 20);
     stroke-width: 0.5px;
 }
 
-.viewport {
-    overflow: auto;
-}
-
 .axis--x path {
     /*display: none;*/
 }
@@ -85,41 +66,68 @@ $task-overall-bg: lighten($task-progress-bg, 20);
     }
 }
 
-.task-list {
-    .task {
-        text {
-            fill: white;
-            text-anchor: middle;
-            alignment-baseline: middle;
-        }
+.ng-gantt-chart {
+    display: flex;
 
-        .progress {
-            fill: $task-progress-bg;
-        }
+    .gantt-task-list {
+        border: $border;
+    }
 
-        .task-bg {
-            fill: $task-overall-bg;
-        }
+    .gantt-task-entry {
+        padding-left: 10px;
+        padding-right: 10px;
 
-        &:hover {
-            .progress {
-                fill: darken($task-progress-bg, 6);
+        //border-bottom: $border;
+
+        -webkit-box-shadow: inset 0px -1px 0px 0px rgba(127,127,127,0.2);
+        -moz-box-shadow: inset 0px -1px 0px 0px rgba(127,127,127,0.2);
+        box-shadow: inset 0px -1px 0px 0px rgba(127,127,127,0.2);
+
+        &:first-child {
+            margin-top: -1px;
+        }
+    }
+
+    .gantt-task-list {
+
+        .gantt-task {
+            text {
+                fill: white;
+                text-anchor: middle;
+                alignment-baseline: middle;
             }
 
-            .task-bg {
-                fill: darken($task-overall-bg, 6);
+            .gantt-progress {
+                fill: $task-progress-bg;
+            }
+
+            .gantt-task-bg {
+                fill: $task-overall-bg;
+            }
+
+            &:hover {
+                .progress {
+                    fill: darken($task-progress-bg, 6);
+                }
+
+                .task-bg {
+                    fill: darken($task-overall-bg, 6);
+                }
+            }
+        }
+
+        .gantt-dependencies {
+            path {
+                fill: none;
+                stroke: #7b7b7b;
+
+                &.gantt-arrow-body {}
+
+                &.gantt-arrow-head {
+                    fill: #7b7b7b;
+                }
             }
         }
     }
 
-    .dependencies {
-        path {
-            fill: none;
-            stroke: #7b7b7b;
-
-            &.arrow-head {
-                fill: #7b7b7b;
-            }
-        }
-    }
 }

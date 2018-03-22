@@ -7,33 +7,23 @@ import {D3SvgContainerUtilityService} from './d3-svg-container-utility.service';
 export class D3TaskUtilityService {
 
     public tasks: GanttTaskModel[] = [];
-    public d3Tasks: Selection<any, GanttTaskModel, any, any>;
+    public d3Tasks: any;
     public taskMargin = { left: 0, top: 2, bottom: 3, right: 0 };
 
     constructor(private chartContainer: D3SvgContainerUtilityService) {}
 
-    public static GetDependencies(task: GanttTaskModel, tasks: GanttTaskModel[]) {
-        /** Return an array of tasks that describe task dependency */
-        task.dependencies = task.dependencies || [];
-
-        return (task.dependencies as any[]).map((id) => {
-            return tasks.find(t => t.id === id);
-        });
-
-    }
-
     /** Initialises tasks */
     public init() {
         this.d3Tasks = this.chartContainer.svg.append('g')
-            .attr('class', 'task-list')
+            .attr('class', 'gantt-task-list')
             .selectAll('rect')
             .data(this.tasks)
             .enter()
-            .append('g').attr('class', 'task'); // Create a task container
+            .append('g').attr('class', 'gantt-task'); // Create a task container
 
-        this.d3Tasks.append('g').attr('class', 'dependencies'); // Create a placeholder for dependency arrows.
-        this.d3Tasks.append('rect').attr('class', 'task-bg'); // Create a placeholder for estimation
-        this.d3Tasks.append('rect').attr('class', 'progress'); // Create a placeholder for progress
+        this.d3Tasks.append('g').attr('class', 'gantt-dependencies'); // Create a placeholder for dependency arrows.
+        this.d3Tasks.append('rect').attr('class', 'gantt-task-bg'); // Create a placeholder for estimation
+        this.d3Tasks.append('rect').attr('class', 'gantt-progress'); // Create a placeholder for progress
         this.d3Tasks.append('text'); // Create a placeholder for text
     }
 
@@ -42,7 +32,7 @@ export class D3TaskUtilityService {
         const scaleX = (i) => this.chartContainer.applyXScaling(i);
         const scaleY = (i) => this.chartContainer.applyYScaling(i);
 
-        this.d3Tasks.selectAll('.task-bg')
+        this.d3Tasks.selectAll('.gantt-task-bg')
             .transition().duration(50)
             .attr('x', (t: GanttTaskModel) => this.getTaskStartX(t))
             .attr('y', (t: GanttTaskModel) => this.getTaskStartY(t))
@@ -50,7 +40,7 @@ export class D3TaskUtilityService {
             .attr('height', (t) => this.chartContainer.getCellHeight() - this.taskMargin.top - this.taskMargin.bottom)
             .attr('width', (t: GanttTaskModel) => this.getTaskEndX(t) - this.getTaskStartX(t));
 
-        this.d3Tasks.selectAll('.progress')
+        this.d3Tasks.selectAll('.gantt-progress')
             .transition().duration(50)
             .attr('x', (t: GanttTaskModel) => this.getTaskStartX(t))
             .attr('y', (t: GanttTaskModel) => this.getTaskStartY(t))

@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {GanttTaskModel} from '../lib/gantt-chart/gantt-task.model';
 
 const Tasks: GanttTaskModel[] = [
@@ -29,7 +29,7 @@ const Tasks: GanttTaskModel[] = [
             1, 2
         ]
     }),
-    /* new GanttTaskModel({
+    new GanttTaskModel({
         id: 4,
         startAt: new Date('2014-03-12T15:00:00.000Z'),
         dueTo: new Date('2014-03-18T12:00:00.000Z'),
@@ -46,16 +46,16 @@ const Tasks: GanttTaskModel[] = [
     new GanttTaskModel({
         id: 6,
         startAt: new Date('2014-03-21T00:00:00.000Z'),
-        dueTo: new Date('2014-04-21T00:00:00.000Z'),
+        dueTo: new Date('2014-04-01T00:00:00.000Z'),
         name: 'Task 6',
         progress: 0
     }),
     new GanttTaskModel({
         id: 7,
-        startAt: new Date('2014-03-21T00:00:00.000Z'),
-        dueTo: new Date('2014-04-21T00:00:00.000Z'),
+        startAt: new Date('2014-03-20T00:00:00.000Z'),
+        dueTo: new Date('2014-04-01T00:00:00.000Z'),
         name: 'Task 7',
-        progress: 0
+        progress: 1
     }),
     new GanttTaskModel({
         id: 8,
@@ -63,7 +63,7 @@ const Tasks: GanttTaskModel[] = [
         dueTo: new Date('2014-03-25T00:00:00.000Z'),
         name: 'Task 8',
         progress: 5
-    }),*/
+    })
 ];
 
 @Component({
@@ -71,10 +71,14 @@ const Tasks: GanttTaskModel[] = [
     template: '<ng-gantt-chart [tasks]="tasks" (taskClick)="test($event)"></ng-gantt-chart>',
     styleUrls: ['./app.component.scss']
 })
-export class AppComponent {
-    public tasks = Tasks;
+export class AppComponent implements OnInit {
+    public tasks;
 
-    public test(task) {
-        console.log(task);
+    ngOnInit(): void {
+        this.tasks = Tasks;
+    }
+
+    public test($event) {
+        console.log($event);
     }
 }

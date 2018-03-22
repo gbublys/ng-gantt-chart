@@ -67,7 +67,7 @@ export class GanttChartComponent implements OnInit {
 
             this.d3ContainerUtility.svgContainer.call(
                 d3Zoom.zoom()
-                    .scaleExtent([1, 4])
+                    .scaleExtent([1, 5])
                     .translateExtent(
                         [
                             [0, 0],
@@ -156,6 +156,8 @@ export class GanttChartComponent implements OnInit {
 
     private initTasks() {
         this.d3TaskUtility.init();
+        this.d3TaskUtility.d3Tasks.on('click', (task) => this.onTaskClick(task));
+
     }
 
     private initDependencies() {
