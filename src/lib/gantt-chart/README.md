@@ -2,7 +2,7 @@
 
 ## Demo
 
-[You can find a demo app by following this link](https://embed.plnkr.co/Fz45l3wsaheDSL5tV9Ko/)
+[You can find a demo app by following this link](https://embed.plnkr.co/qje1PC9TzyxeiQCFad8I/)
 
 ## Dependencies
 

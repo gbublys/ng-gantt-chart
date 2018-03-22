@@ -1,28 +1,32 @@
 {
-  "name": "ng-gantt-chart",
-  "version": "0.0.11",
-  "private": false,
-  "peerDependencies": {
-    "@angular/common": "^5.2.0",
-    "@angular/core": "^5.2.0",
-    "d3": "^4.13.0"
-  },
-  "dependencies": {
-    "d3": "^4.13.0"
-  },
-  "ngPackage": {
-    "lib": {
-      "entryFile": "public_api.ts",
-      "umdModuleIds": {
-        "d3-selection": "d3Selection",
-        "d3-scale": "d3Scale",
-        "d3-array": "d3Array",
-        "d3-axis": "d3Axis",
-        "d3-path": "d3Path",
-        "d3-time-format": "d3TimeFormat"
-      }
-
+    "name": "ng-gantt-chart",
+    "version": "0.0.13",
+    "private": false,
+    "peerDependencies": {
+        "@angular/common": "^5.2.0",
+        "@angular/core": "^5.2.0",
+        "d3": "^4.13.0"
     },
-    "dest": "../../../dist/ng-gantt-chart"
-  }
+    "dependencies": {
+        "d3": "^4.13.0"
+    },
+    "ngPackage": {
+        "lib": {
+            "entryFile": "public_api.ts",
+            "umdModuleIds": {
+                "d3": "d3",
+                "d3-selection": "d3Selection",
+                "d3-scale": "d3Scale",
+                "d3-array": "d3Array",
+                "d3-axis": "d3Axis",
+                "d3-path": "d3Path",
+                "d3-zoom": "d3Zoom",
+                "d3-time-format": "d3TimeFormat"
+            }
+
+        },
+        "dest": "../../../dist/ng-gantt-chart"
+    }
 }
+
+

@@ -6,7 +6,7 @@ import * as d3Array from 'd3-array';
 import * as d3Axis from 'd3-axis';
 import * as d3timeFormat from 'd3-time-format';
 import * as d3Zoom from 'd3-zoom';
-import * as d3 from 'd3';
+import * as d3Selection from 'd3-selection';
 
 import {D3TaskUtilityService} from './utility/d3-task-utility.service';
 import {D3SvgContainerUtilityService} from './utility/d3-svg-container-utility.service';
@@ -99,7 +99,7 @@ export class GanttChartComponent implements OnInit {
     }
 
     private onZoom() {
-        const updateXScale = d3.event.transform.rescaleX(this.xScale);
+        const updateXScale = d3Selection.event.transform.rescaleX(this.xScale);
 
         // re-scale y axis during zoom; ref [2]
         this.drawnXAxis.transition()
