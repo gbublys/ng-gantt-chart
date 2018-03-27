@@ -1,5 +1,5 @@
 import {Component, ElementRef, EventEmitter, HostListener, Input, OnInit, Output, ViewChild, ViewEncapsulation} from '@angular/core';
-import {GanttTaskModel} from './gantt-task.model';
+import {NgGanttTaskModel} from './ng-gantt-task.model';
 
 import * as d3Scale from 'd3-scale';
 import * as d3Array from 'd3-array';
@@ -11,6 +11,7 @@ import * as d3Selection from 'd3-selection';
 import {D3TaskUtilityService} from './utility/d3-task-utility.service';
 import {D3SvgContainerUtilityService} from './utility/d3-svg-container-utility.service';
 import {D3TaskDependencyUtility} from './utility/d3-task-dependency-utility';
+import {GanttTaskModel} from './gantt-task.model';
 
 @Component({
     selector: 'ng-gantt-chart',
@@ -44,7 +45,7 @@ export class GanttChartComponent implements OnInit {
     @Input() public vGrid = true;
     @Input() public hGrid = true;
 
-    @Output() public taskClick = new EventEmitter<GanttTaskModel>();
+    @Output() public taskClick = new EventEmitter<NgGanttTaskModel>();
 
     @ViewChild('chartContainer', { read: ElementRef }) public chartContainer: ElementRef;
 
@@ -85,7 +86,7 @@ export class GanttChartComponent implements OnInit {
     }
 
     @Input() public set tasks(tasks: GanttTaskModel[]) {
-        this.d3TaskUtility.tasks = tasks.map(t => new GanttTaskModel(t as any));
+        this.d3TaskUtility.tasks = tasks.map(t => new GanttTaskModel(t)) as any;
     }
     public get tasks() { return this.d3TaskUtility.tasks; }
 
@@ -130,11 +131,11 @@ export class GanttChartComponent implements OnInit {
 
         this.xScale.range([0, this.getWidth()]);
         this.xScale.domain([
-            d3Array.min(this.tasks, (d) => d.startAt),
-            d3Array.max(this.tasks, (d) => d.dueTo),
+            d3Array.min(this.tasks, (d) => d.startAt as Date),
+            d3Array.max(this.tasks, (d) => d.dueTo as Date),
         ]);
 
-        this.yScale.domain(this.tasks.map((t) => t.gUniqueId ));
+        this.yScale.domain(this.tasks.map((t) => t.uniqueGanttId ));
 
         this.d3ContainerUtility.xScale = this.xScale;
         this.d3ContainerUtility.yScale = this.yScale;
@@ -200,7 +201,7 @@ export class GanttChartComponent implements OnInit {
     }
 
     /** Emit that task was clicked */
-    private onTaskClick(task: GanttTaskModel) {
+    private onTaskClick(task: NgGanttTaskModel) {
         this.taskClick.emit(task);
     }
 

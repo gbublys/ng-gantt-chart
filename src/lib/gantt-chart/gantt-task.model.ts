@@ -1,49 +1,24 @@
-let GANTT_TASK_UNIQUE_ID = 1;
+let GANTT_TASK_UNIQUE_ID = 0;
+const GANTT_TASK_ID_MAP = {};
 
-export interface GanttInputModel {
-    id?: string|number;
+export class GanttTaskModel {
     name: string;
     progress: number;
 
-    startAt?: Date;
-    dueTo?: Date;
-    duration?: Date;
-    dependencies?: number[] | string[];
-}
+    startAt?: Date | string;
+    dueTo?: Date | string;
+    duration?: Date| string;
 
-export class GanttTaskModel {
-    public id?: string|number;
-    public name: string;
-    public progress: number;
+    uniqueGanttId?: number;
+    children?: GanttTaskModel[] = [];
+    parent?: GanttTaskModel;
 
-    public _startAt?: Date;
-    public duration?: Date;
-    public dueTo: Date;
-    public dependencies?: { key: string, value: string|number }[] | number[] | string[];
-
-    /** Unique id that should not be altered.*/
-    private _gUniqueId?: number;
-
-    constructor(data: GanttInputModel) {
+    constructor(data: GanttTaskModel, parent?: GanttTaskModel) {
         Object.assign(this, data);
-        this.gUniqueId = GANTT_TASK_UNIQUE_ID++;
-
-        this.invalidate();
-    }
-
-    public set startAt(value: Date) {
-        this._startAt = value;
-        this.invalidate();
-    }
-    public get startAt(): Date { return this._startAt; }
-
-    public set gUniqueId(value: number) { this._gUniqueId = value; }
-    public get gUniqueId(): number { return this._gUniqueId; }
-
-    /** Refreshes task values */
-    public invalidate() {
-        if (this.duration) {
-            this.dueTo = new Date(this._startAt.getTime() + this.duration.getTime());
-        }
+        this.startAt = new Date(data.startAt as string);
+        this.dueTo = new Date(data.dueTo as string);
+        this.parent = parent;
+        this.uniqueGanttId = GANTT_TASK_UNIQUE_ID++;
+        this.children = this.children.map(child => new GanttTaskModel(child, this));
     }
 }

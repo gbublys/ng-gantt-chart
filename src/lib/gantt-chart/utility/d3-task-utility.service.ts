@@ -1,16 +1,40 @@
 import {Injectable} from '@angular/core';
-import {GanttTaskModel} from '../gantt-task.model';
-import {Selection} from 'd3-selection';
+import {NgGanttTaskModel} from '../ng-gantt-task.model';
 import {D3SvgContainerUtilityService} from './d3-svg-container-utility.service';
+import {GanttTaskModel} from '../gantt-task.model';
 
 @Injectable()
 export class D3TaskUtilityService {
 
-    public tasks: GanttTaskModel[] = [];
+    public _tasks: NgGanttTaskModel[] = [];
     public d3Tasks: any;
     public taskMargin = { left: 0, top: 2, bottom: 3, right: 0 };
 
     constructor(private chartContainer: D3SvgContainerUtilityService) {}
+
+    public set tasks(value: GanttTaskModel[]) {
+        const uniqueTaskMap = {};
+        const flatMapTasks = (tasks: GanttTaskModel[]) => {
+            tasks.forEach(t => {
+                uniqueTaskMap[t.uniqueGanttId] = t;
+
+                flatMapTasks(t.children);
+            });
+        };
+        flatMapTasks(value);
+
+        const uniqueTasks = [];
+
+        for (const key in uniqueTaskMap) {
+            if (uniqueTaskMap.hasOwnProperty(key)) {
+                uniqueTasks.push(uniqueTaskMap[key]);
+            }
+        }
+
+        this._tasks = uniqueTasks;
+    }
+
+    public get tasks(): GanttTaskModel[] { return this._tasks; }
 
     /** Initialises tasks */
     public init() {
@@ -34,52 +58,52 @@ export class D3TaskUtilityService {
 
         this.d3Tasks.selectAll('.gantt-task-bg')
             .transition().duration(50)
-            .attr('x', (t: GanttTaskModel) => this.getTaskStartX(t))
-            .attr('y', (t: GanttTaskModel) => this.getTaskStartY(t))
+            .attr('x', (t: NgGanttTaskModel) => this.getTaskStartX(t))
+            .attr('y', (t: NgGanttTaskModel) => this.getTaskStartY(t))
             .attr('ry', 3)
             .attr('height', (t) => this.chartContainer.getCellHeight() - this.taskMargin.top - this.taskMargin.bottom)
-            .attr('width', (t: GanttTaskModel) => this.getTaskEndX(t) - this.getTaskStartX(t));
+            .attr('width', (t: NgGanttTaskModel) => this.getTaskEndX(t) - this.getTaskStartX(t));
 
         this.d3Tasks.selectAll('.gantt-progress')
             .transition().duration(50)
-            .attr('x', (t: GanttTaskModel) => this.getTaskStartX(t))
-            .attr('y', (t: GanttTaskModel) => this.getTaskStartY(t))
+            .attr('x', (t: NgGanttTaskModel) => this.getTaskStartX(t))
+            .attr('y', (t: NgGanttTaskModel) => this.getTaskStartY(t))
             .attr('ry', 3)
             .attr('height', (t) => this.chartContainer.getCellHeight() - this.taskMargin.top - this.taskMargin.bottom)
-            .attr('width', (d: GanttTaskModel) => (scaleX(d.dueTo) - scaleX(d.startAt)) * d.progress / 100);
+            .attr('width', (d: NgGanttTaskModel) => (scaleX(d.dueTo) - scaleX(d.startAt)) * d.progress / 100);
 
         this.d3Tasks.selectAll('text')
             .transition().duration(50)
-            .text((d: GanttTaskModel) => `${ d.progress }%`)
-            .attr('x', (task: GanttTaskModel) => (scaleX(task.dueTo) - scaleX(task.startAt)) / 2 + scaleX(task.startAt))
-            .attr('y', (task: GanttTaskModel) => scaleY(task.gUniqueId) + this.chartContainer.getCellHeight() / 2);
+            .text((d: NgGanttTaskModel) => `${ d.progress }%`)
+            .attr('x', (task: NgGanttTaskModel) => (scaleX(task.dueTo) - scaleX(task.startAt)) / 2 + scaleX(task.startAt))
+            .attr('y', (task: GanttTaskModel) => scaleY(task.uniqueGanttId) + this.chartContainer.getCellHeight() / 2);
     }
 
 
     public scaleX(value: any): number { return this.chartContainer.applyXScaling(value); }
     public scaleY(value: any): number { return this.chartContainer.applyYScaling(value); }
 
-    public getTaskCenterX(task: GanttTaskModel): number {
+    public getTaskCenterX(task: NgGanttTaskModel): number {
         return this.scaleX(task.startAt) + (this.scaleX(task.dueTo) - this.scaleX(task.startAt)) / 2;
     }
 
-    public getTaskStartX(task: GanttTaskModel): number {
+    public getTaskStartX(task: NgGanttTaskModel): number {
         return this.scaleX(task.startAt) + this.taskMargin.left;
     }
 
-    public getTaskEndX(task: GanttTaskModel): number {
+    public getTaskEndX(task: NgGanttTaskModel): number {
         return this.scaleX(task.dueTo);
     }
 
     public getTaskStartY(task: GanttTaskModel): number {
-        return this.scaleY(task.gUniqueId) + this.taskMargin.top;
+        return this.scaleY(task.uniqueGanttId) + this.taskMargin.top;
     }
 
     public getTaskCenterY(task: GanttTaskModel): number {
-        return this.scaleY(task.gUniqueId) + this.chartContainer.getCellHeight() / 2;
+        return this.scaleY(task.uniqueGanttId) + this.chartContainer.getCellHeight() / 2;
     }
 
     public getTaskEndY(task: GanttTaskModel): number {
-        return this.scaleY(task.gUniqueId) + this.chartContainer.getCellHeight() - this.taskMargin.bottom;
+        return this.scaleY(task.uniqueGanttId) + this.chartContainer.getCellHeight() - this.taskMargin.bottom;
     }
 }

@@ -1,8 +1,9 @@
-import {GanttTaskModel} from '../gantt-task.model';
+import {NgGanttTaskModel} from '../ng-gantt-task.model';
 import * as d3Path from 'd3-path';
 import {D3SvgContainerUtilityService} from './d3-svg-container-utility.service';
 import {Injectable} from '@angular/core';
 import {D3TaskUtilityService} from './d3-task-utility.service';
+import {GanttTaskModel} from '../gantt-task.model';
 
 @Injectable()
 export class D3TaskDependencyUtility {
@@ -19,7 +20,7 @@ export class D3TaskDependencyUtility {
         this.test = this.taskUtility.d3Tasks
             .selectAll('.gantt-dependencies')
             .selectAll('path')
-            .data((t: GanttTaskModel) => {
+            .data((t: NgGanttTaskModel) => {
                 const dependencies = this.getDependencies(t);
                 return dependencies.map((d) => { return { dependency: d, task: t }; });
             })
@@ -43,7 +44,7 @@ export class D3TaskDependencyUtility {
             .attr('d', (data) => this.createArrowPointer(data.task));
     }
 
-    private createPath(data: {task: GanttTaskModel, dependency: GanttTaskModel }): any {
+    private createPath(data: {task: NgGanttTaskModel, dependency: NgGanttTaskModel }): any {
         const task = data.task;
         const dependency = data.dependency;
 
@@ -56,7 +57,7 @@ export class D3TaskDependencyUtility {
         return path;
     }
 
-    private createArrowPointer(task: GanttTaskModel): any {
+    private createArrowPointer(task: NgGanttTaskModel): any {
         const path = d3Path.path();
 
         path.moveTo(this.taskUtility.getTaskStartX(task), this.taskUtility.getTaskCenterY(task));
@@ -69,10 +70,11 @@ export class D3TaskDependencyUtility {
 
     /** Return an array of tasks that describe task dependency */
     private getDependencies(task: GanttTaskModel): GanttTaskModel[] {
-        task.dependencies = task.dependencies || [];
+        return task.parent ? [ task.parent ] : [];
+        // task.dependencies = task.dependencies || [];
 
-        return (task.dependencies as any[]).map((id) => {
-            return this.taskUtility.tasks.find(t => t.id === id);
-        });
+        // return (task.dependencies as any[]).map((id) => {
+        //     return this.taskUtility.tasks.find(t => t.id === id);
+        // });
     }
 }
