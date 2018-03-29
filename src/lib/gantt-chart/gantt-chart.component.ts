@@ -1,4 +1,16 @@
-import {Component, ElementRef, EventEmitter, HostListener, Input, OnInit, Output, ViewChild, ViewEncapsulation} from '@angular/core';
+import {
+    Component,
+    ElementRef,
+    EventEmitter,
+    HostListener,
+    Input,
+    OnChanges,
+    OnInit,
+    Output,
+    SimpleChanges,
+    ViewChild,
+    ViewEncapsulation
+} from '@angular/core';
 import {NgGanttTaskModel} from './ng-gantt-task.model';
 
 import * as d3Scale from 'd3-scale';
@@ -24,7 +36,7 @@ import {GanttTaskModel} from './gantt-task.model';
         D3TaskDependencyUtility,
     ]
 })
-export class GanttChartComponent implements OnInit {
+export class GanttChartComponent implements OnInit, OnChanges {
 
     public margin = {top: 1, right: 1, bottom: 30, left: 0};
 
@@ -36,6 +48,10 @@ export class GanttChartComponent implements OnInit {
 
     private gridVContainer;
     private gridHContainer;
+
+    public svgWidth: string;
+    public svgHeight: string;
+
 
     @Input() public cellHeight = 50;
     @Input() public cellWidth = null;
@@ -53,39 +69,52 @@ export class GanttChartComponent implements OnInit {
                 private d3TaskUtility: D3TaskUtilityService,
                 private d3DependenciesUtility: D3TaskDependencyUtility) {}
 
-    public ngOnInit(): void {
+    public ngOnInit(): void {}
+
+    ngOnChanges(changes: SimpleChanges): void {
         setTimeout(() => {
-            this.initContainer();
-            this.initAxis();
-            this.initGrid();
-            this.initTasks();
-            this.initDependencies();
-
-            this.drawGrid();
-            this.drawTasks();
-            this.drawDependencies();
-            this.drawAxis();
-
-            this.d3ContainerUtility.svgContainer.call(
-                d3Zoom.zoom()
-                    .scaleExtent([1, 5])
-                    .translateExtent(
-                        [
-                            [0, 0],
-                            [this.getWidth(), 0]
-                        ]
-                    )
-                    .on('zoom', () => this.onZoom())
-            );
+            this.svgWidth = (this.getWidth() + this.margin.right + 'px');
+            this.svgHeight = (this.getHeight() + this.margin.bottom + 'px');
+            this.init();
+            this.invalidate();
         });
+    }
+
+    public init() {
+        this.initContainer();
+        this.initAxis();
+        this.initGrid();
+        this.initTasks();
+        this.initDependencies();
+    }
+
+    public invalidate() {
+        this.drawGrid();
+        this.drawTasks();
+        this.drawDependencies();
+        this.drawAxis();
+
+        this.d3ContainerUtility.svgContainer.call(
+            d3Zoom.zoom()
+                .scaleExtent([1, 5])
+                .translateExtent(
+                    [
+                        [0, 0],
+                        [this.getWidth(), 0]
+                    ]
+                )
+                .on('zoom', () => this.onZoom())
+        );
     }
 
     @HostListener('window:resize', ['$event.target'])
     public onResize(): void {
-        this.ngOnInit();
+        this.ngOnChanges(null);
     }
 
     @Input() public set tasks(tasks: GanttTaskModel[]) {
+        console.log(`GOT TASKS`, tasks);
+        tasks = tasks || [];
         this.d3TaskUtility.tasks = tasks.map(t => new GanttTaskModel(t)) as any;
     }
     public get tasks() { return this.d3TaskUtility.tasks; }
@@ -93,10 +122,8 @@ export class GanttChartComponent implements OnInit {
     public getHeight(): number { return this.tasks.length * this.cellHeight; }
 
     public getWidth(): number {
-        const width = this.getAvailableChartWidth();
-
-        const suggestedWidth = this.getTickCount() * this.cellWidth;
-        return suggestedWidth > width ? suggestedWidth : width;
+        const chartContainerClientRect = this.chartContainer.nativeElement.getBoundingClientRect();
+        return Math.floor(chartContainerClientRect.width - this.margin.left - this.margin.right);
     }
 
     private onZoom() {
@@ -114,11 +141,6 @@ export class GanttChartComponent implements OnInit {
         this.d3DependenciesUtility.invalidate();
     }
 
-    /** Return the width of the chart that can span. */
-    private getAvailableChartWidth(): number {
-        const chartContainerClientRect = this.chartContainer.nativeElement.getBoundingClientRect();
-        return Math.floor(chartContainerClientRect.width - this.margin.left - this.margin.right);
-    }
 
     private initContainer() {
         this.d3ContainerUtility.init('svg');
@@ -203,9 +225,5 @@ export class GanttChartComponent implements OnInit {
     /** Emit that task was clicked */
     private onTaskClick(task: NgGanttTaskModel) {
         this.taskClick.emit(task);
-    }
-
-    private getTickCount(): number {
-        return this.tickCount || this.getAvailableChartWidth() / 70;
     }
 }

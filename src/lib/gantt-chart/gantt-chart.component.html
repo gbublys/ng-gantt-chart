@@ -1,12 +1,12 @@
 <div class="ng-gantt-chart">
-    <div [style.padding-top]="margin.top + 'px'" class="gantt-task-list" style="flex: 1">
+    <div [style.padding-top]="margin.top + 'px'" class="gantt-task-list">
         <div *ngFor="let task of tasks" [style.height]="cellHeight + 'px'" class="gantt-task-entry" (click)="onTaskClick(task)">
             <div  class="flex-container center h-100">
                 {{ task.name }}
             </div>
         </div>
     </div>
-    <div #chartContainer style="flex: 10">
-        <svg class="gantt-chart" [attr.width]="getWidth() + margin.right" [attr.height]="getHeight() + margin.bottom "></svg>
+    <div #chartContainer class="gantt-chart">
+        <svg [attr.width]="svgWidth" [attr.height]="svgHeight"></svg>
     </div>
 </div>

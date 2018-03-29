@@ -69,7 +69,13 @@ $task-overall-bg: lighten($task-progress-bg, 20);
 .ng-gantt-chart {
     display: flex;
 
+    .gantt-chart {
+        flex: 3;
+        overflow: auto;
+    }
+
     .gantt-task-list {
+        flex: 1;
         border: $border;
     }
 

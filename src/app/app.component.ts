@@ -71,7 +71,9 @@ export class AppComponent implements OnInit {
     public tasks;
 
     ngOnInit(): void {
-        this.tasks = Tasks;
+        setTimeout(() => {
+            this.tasks = Tasks;
+        }, 1000);
     }
 
     public test($event) {
