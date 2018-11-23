@@ -107,7 +107,7 @@ export class GanttChartComponent implements OnInit, OnChanges {
     }
 
     @HostListener('window:resize', ['$event.target'])
-    public onResize(): void {
+    public onResize($event?): void {
         this.ngOnChanges(null);
     }
 
@@ -221,7 +221,7 @@ export class GanttChartComponent implements OnInit, OnChanges {
     }
 
     /** Emit that task was clicked */
-    private onTaskClick(task: NgGanttTaskModel) {
+    public onTaskClick(task: NgGanttTaskModel) {
         this.taskClick.emit(task);
     }
 }

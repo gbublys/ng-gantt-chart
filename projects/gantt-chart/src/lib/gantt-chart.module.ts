@@ -1,14 +1,16 @@
 import { NgModule } from '@angular/core';
-import { GanttChartComponent } from './gantt-chart.component';
 import {CommonModule} from '@angular/common';
 import {BrowserModule} from '@angular/platform-browser';
+import {GanttChartComponent} from './gantt-chart.component';
 
 @NgModule({
     imports: [
         BrowserModule,
         CommonModule
     ],
-    declarations: [GanttChartComponent],
+    declarations: [
+        GanttChartComponent
+    ],
     exports: [
         GanttChartComponent
     ]
