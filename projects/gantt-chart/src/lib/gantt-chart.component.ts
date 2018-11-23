@@ -1,8 +1,7 @@
 import {
     Component,
     ElementRef,
-    EventEmitter,
-    HostListener,
+    EventEmitter, HostListener,
     Input,
     OnChanges,
     OnInit,
@@ -11,19 +10,19 @@ import {
     ViewChild,
     ViewEncapsulation
 } from '@angular/core';
-import {NgGanttTaskModel} from './ng-gantt-task.model';
-
+import * as d3Zoom from 'd3-zoom';
+import * as d3Selection from 'd3-selection';
 import * as d3Scale from 'd3-scale';
 import * as d3Array from 'd3-array';
 import * as d3Axis from 'd3-axis';
 import * as d3timeFormat from 'd3-time-format';
-import * as d3Zoom from 'd3-zoom';
-import * as d3Selection from 'd3-selection';
 
 import {D3TaskUtilityService} from './utility/d3-task-utility.service';
 import {D3SvgContainerUtilityService} from './utility/d3-svg-container-utility.service';
 import {D3TaskDependencyUtility} from './utility/d3-task-dependency-utility';
 import {GanttTaskModel} from './gantt-task.model';
+import {NgGanttTaskModel} from './ng-gantt-task.model';
+
 
 @Component({
     selector: 'ng-gantt-chart',

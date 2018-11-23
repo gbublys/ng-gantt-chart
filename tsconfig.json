@@ -16,6 +16,20 @@
       "es2017",
       "dom"
     ],
-    "baseUrl": "./"
+    "baseUrl": "./",
+    "paths": {
+      "gantt-chart-lib": [
+        "dist/gantt-chart-lib"
+      ],
+      "gantt-chart-lib/*": [
+        "dist/gantt-chart-lib/*"
+      ],
+      "gantt-chart": [
+        "dist/gantt-chart"
+      ],
+      "gantt-chart/*": [
+        "dist/gantt-chart/*"
+      ]
+    }
   }
 }

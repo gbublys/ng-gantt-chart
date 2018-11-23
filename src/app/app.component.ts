@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { GanttTaskModel } from '../lib/gantt-chart/gantt-task.model';
 import * as data from './data.json';
+import {GanttTaskModel} from '../../projects/gantt-chart/src/lib/gantt-task.model';
 
 @Component({
+    selector: 'ng-root',
     templateUrl: 'app.component.html',
     styleUrls: ['./app.component.scss']
 })
