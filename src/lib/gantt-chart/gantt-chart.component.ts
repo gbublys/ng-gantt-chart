@@ -113,7 +113,6 @@ export class GanttChartComponent implements OnInit, OnChanges {
     }
 
     @Input() public set tasks(tasks: GanttTaskModel[]) {
-        console.log(`GOT TASKS`, tasks);
         tasks = tasks || [];
         this.d3TaskUtility.tasks = tasks.map(t => new GanttTaskModel(t)) as any;
     }

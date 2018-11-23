@@ -62,7 +62,10 @@ export class D3TaskUtilityService {
             .attr('y', (t: NgGanttTaskModel) => this.getTaskStartY(t))
             .attr('ry', 3)
             .attr('height', (t) => this.chartContainer.getCellHeight() - this.taskMargin.top - this.taskMargin.bottom)
-            .attr('width', (t: NgGanttTaskModel) => this.getTaskEndX(t) - this.getTaskStartX(t));
+            .attr('width', (t: NgGanttTaskModel) => {
+                const width = Math.max(0, this.getTaskEndX(t) - this.getTaskStartX(t));
+                return width;
+            });
 
         this.d3Tasks.selectAll('.gantt-progress')
             .transition().duration(50)
